@@ -1,0 +1,27 @@
+{
+  "name": "energy-prices-card",
+  "version": "1.0.0",
+  "description": "A custom Lovelace card that displays energy prices from your energy API",
+  "keywords": [
+    "home-assistant",
+    "homeassistant",
+    "hass",
+    "automation",
+    "lovelace",
+    "custom-cards",
+    "energy",
+    "chart"
+  ],
+  "module": "dist/card-loader.js",
+  "repository": {
+    "type": "git",
+    "url": "your-git-repository-url"
+  },
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "build": "echo \"No build process needed\""
+  }
+}

@@ -1,0 +1,24 @@
+title: Energy Prices Dashboard
+views:
+  - title: Energy
+    cards:
+      - type: 'custom:energy-prices-card'
+        api_url: 'https://100.107.164.25'
+        title: 'Energy Prices'
+        default_type: 'power'
+      
+      # Optional: Add a second card for gas only
+      - type: 'custom:energy-prices-card'
+        api_url: 'https://100.107.164.25'
+        title: 'Gas Prices'
+        default_type: 'gas'
+      
+      # Optional: Add a Markdown card to display the energy summary
+      - type: markdown
+        content: >
+          ## Energy Usage Tips
+
+          - Run your dishwasher and washing machine during the cheapest hours
+          - Charge electric vehicles when electricity prices are negative
+          - Avoid using high-power devices during peak price periods
+          - Check the summary for today's cheapest energy periods

@@ -1,0 +1,17 @@
+alias: "Daily Energy Price Summary"
+description: "Sends a notification with today's energy prices summary every morning"
+trigger:
+  - platform: time
+    at: "06:00:00"
+action:
+  - service: rest_command.get_energy_summary
+    data: {}
+  - wait_for_trigger:
+      - platform: state
+        entity_id: sensor.energy_price_summary
+        attribute: last_updated
+  - service: notify.mobile_app_phone
+    data:
+      title: "Today's Energy Prices"
+      message: "{{ states('sensor.energy_price_summary') }}"
+mode: single

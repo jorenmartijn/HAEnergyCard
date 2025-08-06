@@ -1,0 +1,15 @@
+rest_command:
+  get_energy_summary:
+    url: "https://100.107.164.25/api/energy/summary"
+    method: GET
+    verify_ssl: false
+
+sensor:
+  - platform: rest
+    name: energy_price_summary
+    resource: "https://100.107.164.25/api/energy/summary"
+    value_template: "{{ value_json.message }}"
+    scan_interval: 21600  # Update every 6 hours
+    json_attributes:
+      - power
+      - gas
