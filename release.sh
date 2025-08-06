@@ -33,20 +33,50 @@ if [ "$TEST_API" == "y" ]; then
   # Get today's date in YYYY-MM-DD format
   TODAY=$(date +%Y-%m-%d)
   
-  echo "Testing power data endpoint..."
-  curl -k -s -o /dev/null -w "Power data endpoint: %{http_code}\n" "${API_URL}/api/energy/data/power/${TODAY}"
+  # Extract the hostname or IP from the URL
+  HOSTNAME=$(echo "$API_URL" | sed -e 's|^[^/]*//||' -e 's|[:/].*$||')
+  echo "Testing basic network connectivity to $HOSTNAME..."
+  ping -c 3 "$HOSTNAME"
   
-  echo "Testing gas data endpoint..."
-  curl -k -s -o /dev/null -w "Gas data endpoint: %{http_code}\n" "${API_URL}/api/energy/data/gas/${TODAY}"
+  echo "Testing power data endpoint..."
+  curl -k -v "${API_URL}/api/energy/data/power/${TODAY}" 2>&1 | grep "< HTTP" || echo "No HTTP response received"
+  
+  echo "Testing gas data endpoint with sample response..."
+  curl -k -s "${API_URL}/api/energy/data/gas/${TODAY}" | head -c 300
+  echo "..."
   
   echo "Testing summary endpoint..."
-  curl -k -s -o /dev/null -w "Summary endpoint: %{http_code}\n" "${API_URL}/api/energy/summary/${TODAY}"
+  curl -k -s "${API_URL}/api/energy/summary/${TODAY}" | head -c 300
+  echo "..."
   
   echo ""
-  echo "If you see '200' responses, your API is accessible."
-  echo "If you see '000' responses, there might be connectivity issues."
-  echo "Other error codes indicate specific API issues."
+  echo "Connectivity Troubleshooting Tips:"
+  echo "=================================="
+  echo "1. Make sure the server is running and accessible on the network"
+  echo "2. Check for firewalls blocking access between devices"
+  echo "3. Verify the correct port is included in the URL (e.g., :83)"
+  echo "4. For HTTPS URLs, ensure SSL certificates are properly configured"
+  echo "5. Try accessing the API directly from a web browser on the same device"
+  echo "6. Check that the API server allows cross-origin requests (CORS)"
   echo ""
+  
+  # Add option to modify config for Home Assistant
+  read -p "Would you like to add instructions for configuring Home Assistant? (y/n): " SHOW_HA_CONFIG
+  if [ "$SHOW_HA_CONFIG" == "y" ]; then
+    echo ""
+    echo "Home Assistant Configuration:"
+    echo "============================"
+    echo "Add the card to your dashboard with this configuration:"
+    echo ""
+    echo "type: 'custom:energy-prices-card'"
+    echo "api_url: '$API_URL'  # Make sure to include the port if needed"
+    echo "title: 'Energy Prices'"
+    echo "default_type: 'power'"
+    echo ""
+    echo "If the card still cannot connect, try using IP address instead of hostname"
+    echo "or check if Home Assistant needs to be on the same network as the API."
+    echo ""
+  fi
 fi
 
 # Create a git tag
