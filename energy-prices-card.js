@@ -215,13 +215,20 @@ class EnergyPricesCard extends HTMLElement {
       const selectedType = typeSelect.value;
       const selectedDate = dateSelect.value;
 
+      console.log('Fetching energy data for:', selectedType, selectedDate);
+      
       // Fetch data
       const energyData = await this._fetchEnergyData(selectedType, selectedDate);
+      console.log('Energy data received:', energyData);
       
       // Fetch and display summary
       await this._fetchAndDisplaySummary(selectedDate);
       
       // Process data for chart
+      if (!energyData || !energyData.data || !energyData.data.Prices) {
+        throw new Error('Invalid data format received from API');
+      }
+      
       const prices = energyData.data.Prices;
       const labels = prices.map(entry => {
         const time = entry.readingDate.split('T')[1].substring(0, 5);
@@ -332,13 +339,26 @@ class EnergyPricesCard extends HTMLElement {
 
   async _fetchEnergyData(type, date) {
     const apiUrl = this._config.api_url;
-    const url = `${apiUrl}/api/energy/data/${type}?date=${date}`;
+    const url = `${apiUrl}/api/energy/data/${type}/${date}`;
     
-    const response = await fetch(url);
+    console.log('Fetching energy data from:', url);
+    
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
+    
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error('API Error:', response.status, errorText);
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
-    return await response.json();
+    
+    const data = await response.json();
+    console.log('Received energy data:', data);
+    return data;
   }
 
   async _fetchAndDisplaySummary(date) {
@@ -346,16 +366,36 @@ class EnergyPricesCard extends HTMLElement {
       const apiUrl = this._config.api_url;
       const url = `${apiUrl}/api/energy/summary/${date}`;
       
-      const response = await fetch(url);
+      console.log('Fetching energy summary from:', url);
+      
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+      
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
       
       const summaryData = await response.json();
+      console.log('Summary data received:', summaryData);
+      
       const summaryElement = this.shadowRoot.getElementById('energy-summary');
       
-      if (summaryData && summaryData.message) {
-        summaryElement.textContent = summaryData.message;
+      // Check for different response formats and extract the message
+      let message = null;
+      if (summaryData && summaryData.power && summaryData.power.message) {
+        // Response format: { power: { message: "..." } }
+        message = summaryData.power.message;
+      } else if (summaryData && summaryData.message) {
+        // Response format: { message: "..." }
+        message = summaryData.message;
+      }
+      
+      if (message) {
+        summaryElement.textContent = message;
         summaryElement.classList.remove('hidden');
       } else {
         summaryElement.classList.add('hidden');

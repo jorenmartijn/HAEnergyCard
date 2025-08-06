@@ -62,8 +62,10 @@ default_type: 'power'  # 'power' or 'gas'
 
 - Your Energy API must be accessible to Home Assistant
 - The API must provide endpoints at:
-  - `[api_url]/api/energy/data/{type}?date={date}`
+  - `[api_url]/api/energy/data/{type}/{date}`
   - `[api_url]/api/energy/summary/{date}`
+  
+> **Important:** If your API is running on a custom port, make sure to include it in the `api_url`. For example: `https://your-server:83`
 
 ## Troubleshooting
 
@@ -77,7 +79,9 @@ default_type: 'power'  # 'power' or 'gas'
 2. **"Error loading data: HTTP error! Status: 0"**
    - Your Home Assistant instance can't reach your API
    - Check that the API URL is correct and accessible from Home Assistant
+   - If using a local server, ensure you include the correct port (e.g., `https://your-server:83`)
    - Make sure CORS is enabled on your API
+   - Check your browser's developer console for more detailed error messages
 
 3. **Chart doesn't display properly**
    - Make sure Chart.js is loading correctly

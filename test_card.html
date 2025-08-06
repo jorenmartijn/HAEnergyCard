@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Energy Prices Card Test</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Roboto, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .card-container {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+    h1 {
+      color: #03a9f4;
+    }
+    .config-form {
+      margin-bottom: 20px;
+      padding: 15px;
+      background-color: #e1f5fe;
+      border-radius: 4px;
+    }
+    .config-form input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+    }
+    .config-form button {
+      background-color: #03a9f4;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .error {
+      color: red;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Energy Prices Card Test</h1>
+  
+  <div class="config-form">
+    <h2>Card Configuration</h2>
+    <label for="api_url">API URL (include protocol and port if needed):</label>
+    <input type="text" id="api_url" value="https://100.107.164.25:83">
+    
+    <label for="default_type">Default Type:</label>
+    <select id="default_type">
+      <option value="power">Power</option>
+      <option value="gas">Gas</option>
+    </select>
+    
+    <button onclick="loadCard()">Load Card</button>
+    <div id="config-error" class="error"></div>
+  </div>
+  
+  <div class="card-container" id="card-container">
+    <!-- Card will be inserted here -->
+  </div>
+  
+  <div id="debug-output">
+    <h2>Debug Output</h2>
+    <pre id="debug-console"></pre>
+  </div>
+
+  <script>
+    // Override console.log to also show in our debug area
+    const originalConsoleLog = console.log;
+    const originalConsoleError = console.error;
+    
+    console.log = function() {
+      const args = Array.from(arguments);
+      originalConsoleLog.apply(console, args);
+      document.getElementById('debug-console').textContent += 
+        args.map(arg => typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg).join(' ') + '\n';
+    };
+    
+    console.error = function() {
+      const args = Array.from(arguments);
+      originalConsoleError.apply(console, args);
+      document.getElementById('debug-console').textContent += 
+        'ERROR: ' + args.map(arg => typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg).join(' ') + '\n';
+    };
+    
+    function loadCard() {
+      const apiUrl = document.getElementById('api_url').value;
+      const defaultType = document.getElementById('default_type').value;
+      
+      if (!apiUrl) {
+        document.getElementById('config-error').textContent = 'API URL is required';
+        return;
+      }
+      
+      // Clear previous debug output
+      document.getElementById('debug-console').textContent = '';
+      
+      // Load the card script
+      const script = document.createElement('script');
+      script.src = './energy-prices-card.js';
+      script.onload = function() {
+        console.log('Card script loaded successfully');
+        initializeCard(apiUrl, defaultType);
+      };
+      script.onerror = function() {
+        console.error('Failed to load card script');
+        document.getElementById('config-error').textContent = 'Failed to load card script. Make sure energy-prices-card.js exists in the same directory as this HTML file.';
+      };
+      document.head.appendChild(script);
+    }
+    
+    function initializeCard(apiUrl, defaultType) {
+      // Clear previous card instance
+      document.getElementById('card-container').innerHTML = '<div id="card"></div>';
+      
+      try {
+        // Create a fake Home Assistant environment
+        window.customCards = window.customCards || [];
+        window.customElements = window.customElements || { 
+          define: function(name, cls) {
+            console.log(`Custom element defined: ${name}`);
+            window[name] = cls;
+          }
+        };
+        
+        // Wait for the element to be defined
+        setTimeout(() => {
+          try {
+            console.log('Initializing card');
+            const card = document.createElement('energy-prices-card');
+            card.setConfig({
+              api_url: apiUrl,
+              title: 'Energy Prices',
+              default_type: defaultType
+            });
+            
+            // Mount the card
+            document.getElementById('card').appendChild(card);
+            
+            // Call connectedCallback manually if needed
+            if (card.connectedCallback) {
+              card.connectedCallback();
+            }
+            
+            console.log('Card initialized successfully');
+          } catch (err) {
+            console.error('Error initializing card:', err);
+            document.getElementById('config-error').textContent = `Error initializing card: ${err.message}`;
+          }
+        }, 500);
+      } catch (err) {
+        console.error('Error setting up card:', err);
+        document.getElementById('config-error').textContent = `Error setting up card: ${err.message}`;
+      }
+    }
+  </script>
+</body>
+</html>

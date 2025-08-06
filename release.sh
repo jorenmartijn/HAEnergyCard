@@ -24,6 +24,31 @@ if [ -f "dist/energy-prices-card.js" ]; then
   echo "Copied energy-prices-card.js to root directory"
 fi
 
+# Check API connectivity if user wants to
+read -p "Do you want to test API connectivity? (y/n): " TEST_API
+if [ "$TEST_API" == "y" ]; then
+  read -p "Enter API URL (e.g., https://100.107.164.25:83): " API_URL
+  
+  echo "Testing API connectivity..."
+  # Get today's date in YYYY-MM-DD format
+  TODAY=$(date +%Y-%m-%d)
+  
+  echo "Testing power data endpoint..."
+  curl -k -s -o /dev/null -w "Power data endpoint: %{http_code}\n" "${API_URL}/api/energy/data/power/${TODAY}"
+  
+  echo "Testing gas data endpoint..."
+  curl -k -s -o /dev/null -w "Gas data endpoint: %{http_code}\n" "${API_URL}/api/energy/data/gas/${TODAY}"
+  
+  echo "Testing summary endpoint..."
+  curl -k -s -o /dev/null -w "Summary endpoint: %{http_code}\n" "${API_URL}/api/energy/summary/${TODAY}"
+  
+  echo ""
+  echo "If you see '200' responses, your API is accessible."
+  echo "If you see '000' responses, there might be connectivity issues."
+  echo "Other error codes indicate specific API issues."
+  echo ""
+fi
+
 # Create a git tag
 echo "Creating git tag v$NEW_VERSION"
 git add .
