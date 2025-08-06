@@ -18,11 +18,11 @@ This custom card displays energy prices from your Energy API built with Symfony.
 
 1. Make sure you have [HACS](https://hacs.xyz/) installed
 2. Add this repository as a custom repository in HACS:
-   - Go to HACS → Frontend
+   - Go to HACS → Dashboard
    - Click the three dots in the upper right corner
    - Select "Custom repositories"
    - Add the URL of this repository
-   - Select "Lovelace" as the category
+   - Select "Dashboard" as the category
 3. Click "Install" on the Energy Prices Card
 4. Add the card to your dashboard (see Configuration below)
 
