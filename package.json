@@ -15,9 +15,9 @@
   "module": "dist/card-loader.js",
   "repository": {
     "type": "git",
-    "url": "your-git-repository-url"
+    "url": "https://github.com/jorenmartijn/HAEnergyCard"
   },
-  "author": "Your Name",
+  "author": "Joren Martijn",
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {},

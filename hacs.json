@@ -1,7 +1,5 @@
 {
   "name": "Energy Prices Card",
-  "content_in_root": false,
-  "filename": "dist/energy-prices-card.js",
   "render_readme": true,
   "domains": [],
   "country": [],

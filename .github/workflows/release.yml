@@ -1,0 +1,25 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  release:
+    name: Prepare release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        
+      # Pack the card into a zip file
+      - name: Create zip file
+        run: |
+          cd /home/runner/work/HAEnergyCard/HAEnergyCard
+          zip energy-prices-card.zip -r dist/ README.md hacs.json info.md LICENSE
+
+      # Upload the zip as a release asset
+      - name: Upload zip to release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            energy-prices-card.zip
