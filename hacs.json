@@ -1,7 +1,6 @@
 {
   "name": "Energy Prices Card",
   "render_readme": true,
-  "domains": [],
-  "country": [],
-  "homeassistant": "2023.8.0"
+  "content_in_root": true,
+  "filename": "energy-prices-card.js"
 }

@@ -18,17 +18,18 @@ This custom card displays energy prices from your Energy API built with Symfony.
 
 1. Make sure you have [HACS](https://hacs.xyz/) installed
 2. Add this repository as a custom repository in HACS:
-   - Go to HACS → Dashboard
+   - Go to HACS → Frontend
    - Click the three dots in the upper right corner
    - Select "Custom repositories"
-   - Add the URL of this repository
-   - Select "Dashboard" as the category
-3. Click "Install" on the Energy Prices Card
-4. Add the card to your dashboard (see Configuration below)
+   - Add the URL of this repository: `https://github.com/jorenmartijn/HAEnergyCard`
+   - Select "Lovelace" as the category
+3. Click "Download" on the Energy Prices Card
+4. Restart Home Assistant
+5. Add the card to your dashboard (see Configuration below)
 
 ### Method 2: Manual Installation
 
-1. Download the `dist/energy-prices-card.js` file from this repository
+1. Download the `energy-prices-card.js` file from this repository
 2. Upload it to your Home Assistant instance in the `/config/www/energy-prices-card/` directory (create it if it doesn't exist)
 3. Add the resource to your Home Assistant:
    - Go to Settings → Dashboards → Resources

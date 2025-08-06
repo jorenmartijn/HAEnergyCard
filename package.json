@@ -1,6 +1,6 @@
 {
   "name": "energy-prices-card",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A custom Lovelace card that displays energy prices from your energy API",
   "keywords": [
     "home-assistant",
@@ -12,7 +12,7 @@
     "energy",
     "chart"
   ],
-  "module": "dist/card-loader.js",
+  "module": "energy-prices-card.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/jorenmartijn/HAEnergyCard"
