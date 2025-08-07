@@ -1,109 +1,92 @@
-# Energy Prices Panel for Home Assistant
+# Home Assistant Energy Panel Card
 
-This custom card displays energy prices from your Energy API built with Symfony. It shows price charts and summary information to help you identify the cheapest times to use electricity.
-
-## Features
-
-- Interactive Chart.js visualization
-- Select between power and gas prices
-- Choose dates from the past 7 days
-- Color-coded pricing (green for low, red for high, blue for negative prices)
-- Price summary showing cheapest periods
-- Average price display
-- Responsive design that works on desktop and mobile
+A custom card for Home Assistant that displays energy consumption data from REST API sensors.
 
 ## Installation
 
-### Method 1: HACS (Home Assistant Community Store) - Recommended
-
-1. Make sure you have [HACS](https://hacs.xyz/) installed
-2. Add this repository as a custom repository in HACS:
-   - Go to HACS → Frontend
-   - Click the three dots in the upper right corner
-   - Select "Custom repositories"
-   - Add the URL of this repository: `https://github.com/jorenmartijn/HAEnergyCard`
-   - Select "Lovelace" as the category
-3. Click "Download" on the Energy Prices Card
-4. Restart Home Assistant
-5. Add the card to your dashboard (see Configuration below)
-
-### Method 2: Manual Installation
-
-1. Download the `energy-prices-card.js` file from this repository
-2. Upload it to your Home Assistant instance in the `/config/www/energy-prices-card/` directory (create it if it doesn't exist)
-3. Add the resource to your Home Assistant:
-   - Go to Settings → Dashboards → Resources
-   - Click "Add Resource"
-   - Set URL to `/local/energy-prices-card/energy-prices-card.js`
-   - Set Resource type to "JavaScript Module"
-4. Restart Home Assistant
-5. Add the card to your dashboard (see Configuration below)
+1. Copy the `energy-prices-card.js` file to your Home Assistant config directory under `www/ha-energy-panel/`
+2. Add the card through the resource manager in Home Assistant:
+   - URL: `/local/ha-energy-panel/energy-prices-card.js`
+   - Type: JavaScript Module
 
 ## Configuration
 
-Add the card to your dashboard with this configuration:
+### REST Sensors Setup
+
+First, set up the REST sensors to pull data from your energy API:
 
 ```yaml
-type: 'custom:energy-prices-card'
-api_url: 'https://100.107.164.25'  # Change this to your API URL
-title: 'Energy Prices'
-default_type: 'power'  # 'power' or 'gas'
+sensor:
+  - platform: rest
+    name: energy_power_data
+    resource: http://100.107.164.25:9080/api/energy/data
+    method: GET
+    params:
+      type: power
+      date: "{{ now().strftime('%Y-%m-%d') }}"
+    value_template: "{{ value_json }}"
+
+  - platform: rest
+    name: energy_gas_data
+    resource: http://100.107.164.25:9080/api/energy/data
+    method: GET
+    params:
+      type: gas
+      date: "{{ now().strftime('%Y-%m-%d') }}"
+    value_template: "{{ value_json }}"
+
+  - platform: rest
+    name: energy_available_dates
+    resource: http://100.107.164.25:9080/api/energy/available-dates
+    method: GET
+    value_template: "{{ value_json }}"
 ```
 
-### Options
+### Date Selection Helper
 
-| Name | Type | Default | Description |
-|------|------|---------|-------------|
-| `api_url` | string | required | URL of your energy API |
-| `title` | string | 'Energy Prices' | Card title |
-| `default_type` | string | 'power' | Default energy type ('power' or 'gas') |
+```yaml
+input_datetime:
+  energy_chart_date:
+    name: Energy Chart Date
+    has_date: true
+    has_time: false
+    initial: "2025-08-07"
+```
+
+### Card Configuration
+
+```yaml
+type: custom:ha-energy-panel
+title: Energy Consumption
+power_entity: sensor.energy_power_data
+gas_entity: sensor.energy_gas_data
+dates_entity: sensor.energy_available_dates
+date_input: input_datetime.energy_chart_date
+```
+
+### Date Change Automation
+
+```yaml
+automation:
+  - alias: Update Energy Data When Date Changes
+    trigger:
+      - platform: state
+        entity_id: input_datetime.energy_chart_date
+    action:
+      - service: homeassistant.update_entity
+        entity_id: sensor.energy_power_data
+      - service: homeassistant.update_entity
+        entity_id: sensor.energy_gas_data
+```
+
+## Features
+
+- Displays power and gas consumption data
+- Date selection from available dates
+- Integration with Home Assistant REST sensors
+- Automatic updating when date changes
 
 ## Requirements
 
-- Your Energy API must be accessible to Home Assistant
-- The API must provide endpoints at:
-  - `[api_url]/api/energy/data/{type}/{date}`
-  - `[api_url]/api/energy/summary/{date}`
-  
-> **Important:** If your API is running on a custom port, make sure to include it in the `api_url`. For example: `https://your-server:83`
-
-## Troubleshooting
-
-### Common Issues
-
-1. **"Custom element doesn't exist: energy-prices-card"**
-   - Make sure the resource is correctly loaded in Home Assistant
-   - Check the browser console for JavaScript errors
-   - Make sure you've added the resource in Settings → Dashboards → Resources
-
-2. **"Error loading data: HTTP error! Status: 0"**
-   - Your Home Assistant instance can't reach your API
-   - Check that the API URL is correct and accessible from Home Assistant
-   - If using a local server, ensure you include the correct port (e.g., `https://your-server:83`)
-   - Make sure CORS is enabled on your API
-   - Check your browser's developer console for more detailed error messages
-
-3. **Chart doesn't display properly**
-   - Make sure Chart.js is loading correctly
-   - Check the browser console for any errors
-
-### Advanced Troubleshooting
-
-- Check Home Assistant logs for JavaScript errors
-- Test your API endpoints directly using curl or Postman
-- Verify that your API returns CORS headers (Access-Control-Allow-Origin)
-
-## Security Note
-
-For enhanced security:
-- Consider adding authentication to your API
-- Use HTTPS for the API URL
-- Only expose the API on trusted networks
-
-## Screenshots
-
-[Screenshots would be here]
-
-## License
-
-MIT License
+- Home Assistant with configured REST sensors
+- Energy API (http://100.107.164.25:9080/api/energy/data)

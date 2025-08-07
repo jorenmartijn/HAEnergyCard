@@ -1,17 +1,13 @@
-alias: "Daily Energy Price Summary"
-description: "Sends a notification with today's energy prices summary every morning"
-trigger:
-  - platform: time
-    at: "06:00:00"
-action:
-  - service: rest_command.get_energy_summary
-    data: {}
-  - wait_for_trigger:
+# Example automation to update energy sensors when date changes
+
+automation:
+  - alias: Update Energy Data When Date Changes
+    description: Updates power and gas data when the date selection changes
+    trigger:
       - platform: state
-        entity_id: sensor.energy_price_summary
-        attribute: last_updated
-  - service: notify.mobile_app_phone
-    data:
-      title: "Today's Energy Prices"
-      message: "{{ states('sensor.energy_price_summary') }}"
-mode: single
+        entity_id: input_datetime.energy_chart_date
+    action:
+      - service: homeassistant.update_entity
+        entity_id: sensor.energy_power_data
+      - service: homeassistant.update_entity
+        entity_id: sensor.energy_gas_data

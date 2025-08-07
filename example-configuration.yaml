@@ -1,15 +1,8 @@
-rest_command:
-  get_energy_summary:
-    url: "https://100.107.164.25/api/energy/summary"
-    method: GET
-    verify_ssl: false
+# Example Energy Panel Card Configuration
 
-sensor:
-  - platform: rest
-    name: energy_price_summary
-    resource: "https://100.107.164.25/api/energy/summary"
-    value_template: "{{ value_json.message }}"
-    scan_interval: 21600  # Update every 6 hours
-    json_attributes:
-      - power
-      - gas
+type: custom:ha-energy-panel
+title: Energy Consumption
+power_entity: sensor.energy_power_data
+gas_entity: sensor.energy_gas_data
+dates_entity: sensor.energy_available_dates
+date_input: input_datetime.energy_chart_date

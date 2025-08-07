@@ -1,27 +1,19 @@
 {
-  "name": "energy-prices-card",
-  "version": "1.0.2",
-  "description": "A custom Lovelace card that displays energy prices from your energy API",
+  "name": "ha-energy-panel",
+  "version": "1.0.3",
+  "description": "A custom card for Home Assistant to display energy consumption data",
+  "main": "energy-prices-card.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "cp energy-prices-card.js dist/"
+  },
   "keywords": [
     "home-assistant",
-    "homeassistant",
-    "hass",
-    "automation",
-    "lovelace",
-    "custom-cards",
     "energy",
-    "chart"
+    "custom-card",
+    "lovelace"
   ],
-  "module": "energy-prices-card.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/jorenmartijn/HAEnergyCard"
-  },
-  "author": "Joren Martijn",
+  "author": "",
   "license": "MIT",
-  "dependencies": {},
-  "devDependencies": {},
-  "scripts": {
-    "build": "echo \"No build process needed\""
-  }
+  "dependencies": {}
 }

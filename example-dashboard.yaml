@@ -1,24 +1,27 @@
-title: Energy Prices Dashboard
-views:
-  - title: Energy
-    cards:
-      - type: 'custom:energy-prices-card'
-        api_url: 'https://100.107.164.25'
-        title: 'Energy Prices'
-        default_type: 'power'
-      
-      # Optional: Add a second card for gas only
-      - type: 'custom:energy-prices-card'
-        api_url: 'https://100.107.164.25'
-        title: 'Gas Prices'
-        default_type: 'gas'
-      
-      # Optional: Add a Markdown card to display the energy summary
-      - type: markdown
-        content: >
-          ## Energy Usage Tips
+# Example Energy Dashboard Configuration
 
-          - Run your dishwasher and washing machine during the cheapest hours
-          - Charge electric vehicles when electricity prices are negative
-          - Avoid using high-power devices during peak price periods
-          - Check the summary for today's cheapest energy periods
+title: Energy Dashboard
+views:
+  - title: Energy Consumption
+    path: energy
+    icon: mdi:flash
+    badges: []
+    cards:
+      - type: custom:ha-energy-panel
+        title: Energy Consumption
+        power_entity: sensor.energy_power_data
+        gas_entity: sensor.energy_gas_data
+        dates_entity: sensor.energy_available_dates
+        date_input: input_datetime.energy_chart_date
+
+      - type: entities
+        title: Energy Data
+        entities:
+          - entity: input_datetime.energy_chart_date
+            name: Select Date
+          - entity: sensor.energy_power_data
+            name: Power Data
+          - entity: sensor.energy_gas_data
+            name: Gas Data
+          - entity: sensor.energy_available_dates
+            name: Available Dates
